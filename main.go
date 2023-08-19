@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+
+	"raisesync/auth"
 	"raisesync/handler"
 	"raisesync/user"
 
@@ -20,8 +22,9 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
 
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
