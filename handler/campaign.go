@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"raisesync/campaign"
 	"raisesync/helper"
+	"raisesync/user"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -65,3 +66,39 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 // service yang menentukan repository nama yang di call
 // repository : FindAll, FindUserID
 // db
+
+func (h *campaignHandler) CreateCampaign(c *gin.Context) {
+	var input campaign.CreateCampaignInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatError(err)
+
+		errorMessage := gin.H{"error": errors}
+
+		response := helper.APIResponse("Failed to create campaign", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	input.User = currentUser
+
+	newCampaign, err := h.service.CreateCampaign(input)
+	if err != nil {
+
+		response := helper.APIResponse("Failed to create campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIResponse("Success to create campaign", http.StatusOK, "success", campaign.FormatCampaign(newCampaign))
+	c.JSON(http.StatusOK, response)
+
+}
+
+// tangkap parameter dari user ke inpur struct
+// ambil current user dari jwt/handler
+// panggil service, parameternya input struct (dan juga buat slug)
+// panggil repository untuk simpan data campaign baru
