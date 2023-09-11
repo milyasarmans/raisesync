@@ -47,3 +47,24 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 // panggil service, input struct sebagai parameter
 // service, dari campaign id panggil repo
 // repo mencari transaction
+
+func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
+
+	transactions, err := h.service.GetTransactionsByUserID(userID)
+	if err != nil {
+		response := helper.APIResponse("Failed to get user's transactions", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIResponse("User's transaction", http.StatusOK, "success", transaction.FormatUserTransactions(transactions))
+	c.JSON(http.StatusOK, response)
+}
+
+// GetUserTransactions
+// handler
+// ambil nilai user dari jwt
+// service
+// repository ambil data transaction
