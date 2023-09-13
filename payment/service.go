@@ -7,7 +7,8 @@ import (
 	"github.com/veritrans/go-midtrans"
 )
 
-type service struct{}
+type service struct {
+}
 
 type Service interface {
 	GetPaymentURL(transaction Transaction, user user.User) (string, error)
@@ -19,8 +20,8 @@ func NewService() *service {
 
 func (s *service) GetPaymentURL(transaction Transaction, user user.User) (string, error) {
 	midclient := midtrans.NewClient()
-	midclient.ServerKey = "SB-Mid-server-_LMc6fl4Tcjjm7TdiltBWGKF"
-	midclient.ClientKey = "SB-Mid-client-ew7pY3sGWyc04ZNU"
+	midclient.ServerKey = ""
+	midclient.ClientKey = ""
 	midclient.APIEnvType = midtrans.Sandbox
 
 	snapGateway := midtrans.SnapGateway{
